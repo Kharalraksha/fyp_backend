@@ -4,8 +4,9 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const database = require("../connect/database");
 
-exports.editArtist = async (req, res) => {
-  const { artist_Id, artist_Name, phone_Number, email, address } = req.body;
+exports.editArtistById = async (req, res) => {
+  const { artist_Id } = req.params;
+  const { artist_Name, phone_Number, email, address } = req.body;
 
   try {
     const updateQuery =
@@ -22,7 +23,6 @@ exports.editArtist = async (req, res) => {
 
         console.log("Update Result:", result);
 
-        console.log("Artist updated successfully");
         res.status(200).json({ message: "Artist updated successfully" });
       }
     );

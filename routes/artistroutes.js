@@ -7,7 +7,7 @@ const {
   uploadImage,
 } = require("../controller/artistcontoller");
 const { getArtists } = require("../controller/artistcontoller");
-const { editArtist } = require("../controller/editartistcontroller");
+
 const { deleteArtist } = require("../controller/deleteartistcontroller");
 const {
   loginArtist,
@@ -17,6 +17,8 @@ const {
 const {
   artistSignup,
   upload,
+  editArtistById,
+  deleteArtistById,
 } = require("../controller/artistsignupcontroller");
 
 const artistroutes = express.Router();
@@ -46,7 +48,8 @@ artistroutes.get(
 );
 // artistroutes.get("/:artistid", getArtistsById);
 
-artistroutes.put("/editArtist", editArtist);
-artistroutes.delete("/deleteArtist/:Id", deleteArtist);
+artistroutes.put("/editArtist/:artistId", editArtistById);
+artistroutes.delete("/deleteArtist/:artistId", deleteArtistById);
+
 
 module.exports = artistroutes;

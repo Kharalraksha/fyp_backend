@@ -22,14 +22,14 @@ exports.uploadImages = (req, res) => {
     }
 
     // Validate artist_id is present
-    if (!req.body.artist_Id) {
+    if (!req.body.artistId) {
       return res.status(400).json({ message: "Artist ID is required" });
     }
 
     // Prepare file paths and artist_ids for insertion
     const values = req.files.map((file) => {
       const imagePath = `http://localhost:3000/uploads/${file.filename}`; // Adjust path as needed
-      return [imagePath, req.body.artist_Id];
+      return [imagePath, req.body.artistId];
     });
 
     // Using MySQL's bulk insert syntax

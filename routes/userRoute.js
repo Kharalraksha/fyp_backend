@@ -9,9 +9,10 @@ const {
   addUser,
   getUsers,
   getUsersById,
+  editUserById,
+  deleteUser,
+  deleteUserById,
 } = require("../controller/signupcontroller");
-const { deleteUser } = require("../controller/deleteusercontroller");
-const { editUser } = require("../controller/editusercontroller");
 
 const userRoutes = express.Router();
 //localhost:3000/api/signup
@@ -23,13 +24,9 @@ userRoutes.post(
 userRoutes.get("/all", getUsers);
 
 userRoutes.get("/:userid", getUsersById);
-userRoutes.put("/editUser", editUser);
-userRoutes.delete("/deleteUser/:Id", deleteUser);
-// Route to edit an existing user
-// userRoutes.put("/editUser", editUser);
 
-// // Route to delete an existing user
-// userRoutes.delete("/deleteUser", deleteUser);
+userRoutes.put("/editUser/:id", editUserById);
+userRoutes.delete("/deleteUser/:id", deleteUserById);
 
 userRoutes.post("/login", ValidateLogin(), loginUser);
 

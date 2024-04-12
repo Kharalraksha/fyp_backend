@@ -118,9 +118,83 @@ const getUsersById = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const editUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const {
+      user_Name,
+      email,
+      phone_number,
+      address,
+      gender,
+      DOB,
+      profile,
+      roles,
+      registration_Date,
+    } = req.body;
+
+    const updateUserQuery = `
+      UPDATE user 
+      SET 
+        user_Name = ?,
+        email = ?,
+        phone_number = ?,
+        address = ?,
+        gender = ?,
+        DOB = ?,
+        profile = ?,
+        roles = ?,
+        registration_Date = ?
+      WHERE user_Id = ?`;
+
+    const result = await database.query(updateUserQuery, [
+      user_Name,
+      email,
+      phone_number,
+      address,
+      gender,
+      DOB,
+      profile,
+      roles,
+      registration_Date,
+      id,
+    ]);
+
+    console.log("User updated successfully");
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const deleteUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleteQuery = "DELETE FROM user WHERE user_Id = ?";
+    database.query(deleteQuery, [id], (err, result) => {
+      if (err) {
+        console.error("Error deleting user from the database:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+        return;
+      }
+
+      console.log("User deleted successfully");
+      res.status(200).json({ message: "User deleted successfully" });
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 
 module.exports = {
   addUser,
   getUsers,
   getUsersById,
+  editUserById,
+  deleteUserById,
 };

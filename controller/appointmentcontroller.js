@@ -95,3 +95,124 @@ exports.getAppointmentById = (req, res) => {
     res.json(result[0]); // Return the appointment data
   });
 };
+exports.getAppointmentsByArtistId = (req, res) => {
+  const { artistId } = req.params; // Ensure you're capturing the artistId correctly
+
+  const query = `
+    SELECT 
+      Appointment.*,
+      user_Name AS userName,
+      user.email AS userEmail
+    FROM 
+      Appointment
+    JOIN 
+      User ON Appointment.user_Id = User.user_Id
+    WHERE 
+      Appointment.artist_Id = ?;
+  `;
+
+  database.query(query, [artistId], (err, results) => {
+    if (err) {
+      console.error("Error fetching appointments with user details:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No appointments found for this artist." });
+    }
+
+    res.json(results);
+  });
+};
+exports.getAppointmentsWithDetails = (req, res) => {
+  try {
+    const query = `
+      SELECT 
+    Appointment.*,
+    user.user_Name AS userName,
+    user.email AS userEmail,
+    Artist.artist_Name AS artistName,
+    Artist.email AS artistEmail
+FROM 
+    Appointment
+JOIN 
+    User ON Appointment.user_Id = User.user_Id
+JOIN
+    Artist ON Appointment.artist_Id = Artist.artist_Id;
+
+    `;
+    database.query(query, (err, results) => {
+      if (err) {
+        console.error(
+          "Error fetching appointments with user and artist details:",
+          err
+        );
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      res.json(results);
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching appointments with user and artist details:",
+      error
+    );
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+// PUT route for rescheduling an appointment
+exports.rescheduleAppointment = (req, res) => {
+  const { appointmentId } = req.params; // Make sure you're extracting appointmentId from the URL parameters correctly
+  const { newDate, newTimeslotId } = req.body; // Extract both newDate and newTimeslotId from the request body
+
+  // Trim and validate the newDate
+  const trimmedDate = newDate.trim();
+  if (!moment(trimmedDate, "YYYY-MM-DD", true).isValid()) {
+    return res
+      .status(400)
+      .json({ error: "Invalid date format. Please use 'YYYY-MM-DD'." });
+  }
+
+  // Prepare and execute the query to update the appointment's date and timeslot
+  const updateQuery =
+    "UPDATE Appointment SET date = ?, timeslot_id = ? WHERE appointment_Id = ?";
+  database.query(
+    updateQuery,
+    [trimmedDate, newTimeslotId, appointmentId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating appointment:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (result.affectedRows === 0) {
+        // If no rows are affected, it means the appointment was not found
+        return res.status(404).json({ error: "Appointment not found" });
+      }
+
+      res.json({ message: "Appointment rescheduled successfully" });
+    }
+  );
+};
+
+// DELETE route for canceling an appointment
+exports.cancelAppointment = (req, res) => {
+  const { appointmentId } = req.params;
+
+  const cancelQuery =
+    "UPDATE Appointment SET status = 'canceled' WHERE appointment_Id = ?";
+
+  database.query(cancelQuery, [appointmentId], (err, result) => {
+    if (err) {
+      console.error("Error canceling appointment:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    res.json({ message: "Appointment canceled successfully" });
+  });
+};
