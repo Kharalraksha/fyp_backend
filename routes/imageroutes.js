@@ -7,7 +7,7 @@ const imagecontroller = require("../controller/imagecontroller");
 // Backend route configuration
 imageroutes.post("/upload", imagecontroller.uploadImages);
 
-imageroutes.get("/upload/:Id", imagecontroller.getImagesByArtistId);
+imageroutes.get("/uploadphoto/:Id", imagecontroller.getImagesByArtistId);
 imageroutes.get("/get", imagecontroller.getartistimages);
 
 module.exports = imageroutes;
